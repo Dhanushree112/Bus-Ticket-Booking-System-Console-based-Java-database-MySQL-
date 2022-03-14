@@ -1,0 +1,509 @@
+package BUS_RESERVATION_SYSTEM;
+
+import java.sql.*;
+import java.util.*;
+
+public class Bus_Ticket_Booking 
+{
+		public static void main(String[] args) throws ClassNotFoundException, SQLException 
+		{
+			Bus_Ticket_Booking obj=new Bus_Ticket_Booking();
+			obj.execute();
+		}
+	
+		static Connection con=null;
+	    static int count=0;
+    
+    // to establish connection
+    
+		static void toConnect() throws ClassNotFoundException, SQLException
+		{
+			Class.forName("com.mysql.cj.jdbc.Driver");
+			con=DriverManager.getConnection("jdbc:mysql://localhost:3306/BUS_TICKET_BOOKING","root","1201dp");
+		}
+	
+	//login
+		
+		public void login()
+		{
+			System.out.println(" [1] Admin ");
+			System.out.println(" [2] User ");
+			System.out.println(" [0] exit ");
+		}
+	
+	//admin menu
+	
+		static void mainMenuAdmin()
+		{
+			System.out.println("*************************");
+			System.out.println(" Bus Reservation System ");
+			System.out.println("*************************");
+			System.out.println(" [1] Destination Details ");
+			System.out.println(" [2] Update destination Details ");
+			System.out.println(" [3] Driver Details ");
+			System.out.println(" [4] Update driver Details ");
+			System.out.println(" [5] View Passenger Details ");
+			System.out.println(" [0] Exit ");
+		}
+	
+	// to display destination details
+	
+		static void toShowDest() throws ClassNotFoundException, SQLException 
+		{
+			toConnect();
+		    PreparedStatement p=null;
+			ResultSet result=null;
+			String query="Select * from destination";
+			p=con.prepareStatement(query);
+			result=p.executeQuery();
+			System.out.println("ID\t\tPlace\t\t\tFare\t\tSeats");
+			while(result.next())
+			{
+				System.out.println(result.getInt(1)+"\t\t"+result.getString(2)+"\t\t\t"+result.getInt(3)+"\t\t"+result.getInt(4));
+			}
+			System.out.println("");
+		}
+	
+	//to update changes
+	
+		public void toUpdate()
+		{
+			System.out.println(" [1] Insert ");
+			System.out.println(" [2] Delete ");
+			System.out.println(" [0] Exit");
+		}
+		
+	
+	// to insert destionation details
+		
+		public void toInsertDest() throws SQLException, ClassNotFoundException
+		{
+			toConnect();
+			PreparedStatement p=null;
+			Scanner sc=new Scanner(System.in);
+			System.out.println("Enter destination id : ");
+			int dest_id=sc.nextInt();
+			System.out.println("Enter destination name : ");
+			String dest_name=sc.next();
+			System.out.println("Enter fare for destination : ");
+			int d_fare=sc.nextInt();
+			System.out.println("Enter total seats : ");
+			int d_seats=sc.nextInt();
+			String sql="insert into destination values (?,?,?,?)";
+			p=con.prepareStatement(sql);
+			p.setInt(1, dest_id);
+			p.setString(2, dest_name);
+			p.setInt(3, d_fare);
+			p.setInt(4, d_seats);
+			p.executeUpdate();
+			System.out.println("Insertion done successfully...");
+		}
+	
+	// to delete destination record
+	
+		public void toDeleteDest(int dest_id) throws SQLException, ClassNotFoundException
+		{
+			toConnect();
+			String sql=("delete from destination where D_ID = ? ;");
+			PreparedStatement p=con.prepareStatement(sql);
+			p.setInt(1,dest_id);
+			p.executeUpdate();
+			System.out.println("Deletion done successfully...");
+		}
+	
+	//to display driver details
+	
+		static void toDisplayDriver() throws SQLException, ClassNotFoundException 
+		{
+			toConnect();
+			Scanner sc=new Scanner(System.in);
+			System.out.println("Enter destination id : ");
+			int dest_id=sc.nextInt();
+			Statement statement = con.createStatement();
+			String sql="Select * from driver where d_id = '"+dest_id+"'";
+			ResultSet rs=statement.executeQuery(sql);
+			System.out.println("D_id\t\tName\t\tphone");
+			while (rs.next()) 
+			{
+				System.out.print(rs.getInt(1)+"\t\t"+rs.getString(2)+"\t\t"+rs.getString(3));
+			}
+			System.out.println("");
+		}
+	
+	//to insert driver details 
+		
+		public void toInsertDriver() throws SQLException, ClassNotFoundException
+		{
+			toConnect();
+			PreparedStatement p=null;
+			Scanner sc=new Scanner(System.in);
+			System.out.println("Enter destination id : ");
+			int dest_id=sc.nextInt();
+			System.out.println("Enter driver name : ");
+			String d_name=sc.next();
+			System.out.println("Enter phn_no of driver : ");
+			String d_phn=sc.next();
+			String sql="insert into driver values (?,?,?)";
+			p=con.prepareStatement(sql);
+			p.setInt(1, dest_id);
+			p.setString(2, d_name);
+			p.setString(3,d_phn);
+			p.executeUpdate();
+			System.out.println("Insertion done successfully...");
+		}
+	
+	// to delete driver record
+		
+		public void toDeleteDriver(int dest_id) throws SQLException, ClassNotFoundException
+		{
+			toConnect();
+			String sql=("delete from driver where D_ID = ? ;");
+			PreparedStatement p=con.prepareStatement(sql);
+			p.setInt(1,dest_id);
+			p.executeUpdate();
+			System.out.println("Deletion done successfully...");
+		}
+	
+	//to display passenger details
+	
+	   public void passengerDetail() throws SQLException, ClassNotFoundException
+	   {
+		   toConnect();
+		   int number=0;
+		   if(number==0)
+		   {
+			   System.out.println("No Passenger Records..");
+		   }
+		   else
+		   {
+		   PreparedStatement p=null;
+			ResultSet res=null;
+			String query="Select * from passenger_Details";
+			p=con.prepareStatement(query);
+			res=p.executeQuery();
+		   System.out.println("Name\t\tPhn_no\t\tSeats_booked\t\tAmount_paid\t\t\tU_id\t\t\tD_id");
+		   while(res.next())
+		   {
+			   System.out.println(res.getString(1)+"\t\t"+res.getString(2)+"\t\t"+res.getInt(3)+"\t\t"+res.getInt(4)+"\t\t\t\t"+res.getInt(5)+"\t\t\t"+res.getInt(6));
+			   number++;
+		   }
+		   System.out.println("");
+		   }
+	   }
+   
+    // user menu
+		   
+			static void mainMenuUser()
+			{
+				System.out.println("*************************");
+				System.out.println(" Bus Reservation System ");
+				System.out.println("*************************");
+				System.out.println(" [1] Destination Details ");
+				System.out.println(" [2] Driver Details ");
+				System.out.println(" [3] Book Tickets ");
+				System.out.println(" [4] Cancel Tickets ");
+				System.out.println(" [5] Show Bill ");
+				System.out.println(" [0] Exit ");
+			}
+			
+	// total amount to be paid
+			
+		static void toPay(int id , int seat) throws SQLException 
+		{
+			Statement statement = con.createStatement();
+			String sql="Select fare from destination where d_id='"+id+"'";
+			ResultSet res=statement.executeQuery(sql);
+			while(res.next()) 
+			{
+				System.out.print(res.getInt(1)*seat);
+			}
+			System.out.println("");
+		}
+	
+	// amount paid by the customer
+	
+		static void fare(int id,int seat,int amount) throws SQLException
+		{
+			Statement statement = con.createStatement();
+			String sql="Select fare from destination where d_id='"+id+"'";
+			ResultSet res=statement.executeQuery(sql);
+			System.out.println("Balance : ");
+			while(res.next())
+			{
+				int total=res.getInt(1)*seat;
+				if(total<=amount) 
+				{
+				System.out.print(amount-total);
+				count++;
+				}
+				else
+				{
+					System.out.println("Amount you entered is insufficient...");
+				}
+			}
+			System.out.println("");
+		}
+		
+	//to view passenger details
+	
+		public static void passengerDetails(String c_name,String phone,int seat,int amount,int id) throws SQLException, ClassNotFoundException
+		{
+			toConnect();
+			PreparedStatement p=null;
+			String sql="insert into passenger_details (name,phn_no,no_of_seats,amount_paid,d_id) values (?,?,?,?,?)";
+			p=con.prepareStatement(sql);
+			p.setString(1, c_name);
+			p.setString(2, phone);
+			p.setInt(3,seat);
+			p.setInt(4,amount);
+			p.setInt(5, id);
+			p.executeUpdate();
+			System.out.println("Booking are done successfully...");
+		}
+		
+	// seats update
+	
+		public void updateSeat(int seat,int id,String phone) throws SQLException, ClassNotFoundException
+		{
+			toConnect();
+			int remainingSeats=0;
+			Statement statement = con.createStatement();
+			String query="Select seats from destination where d_id='"+id+"'";
+			ResultSet res=statement.executeQuery(query);
+			while(res.next())
+			remainingSeats=res.getInt(1)-seat;
+			String sql="update destination set seats=? where d_id=?";
+			PreparedStatement p=con.prepareStatement(sql);
+			p.setInt(1,remainingSeats);
+			p.setInt(2, id);
+			p.executeUpdate();
+			String string = "Select u_id from passenger_details where phn_no=?";
+			PreparedStatement pst=con.prepareStatement(string);
+			pst.setString(1,phone);
+			ResultSet rs=pst.executeQuery();
+			while(rs.next()) 
+			{
+				System.out.println("Note your UNIQUE ID : "+rs.getString(1));
+			}
+			System.out.println("Seat updated successfully...");
+		}
+	
+	//to cancel seats that are booked
+		
+		public void updateCancelledSeat(int unique,int seat,int id) throws SQLException, ClassNotFoundException
+		{
+			toConnect();
+			int cancelled=0;
+				String sql="Select seats from destination where d_id=?";
+				PreparedStatement pst=con.prepareStatement(sql);
+				pst.setInt(1,id);
+				ResultSet rs=pst.executeQuery();
+				while(rs.next())
+				{
+				cancelled=rs.getInt(1)+seat;
+				}
+				String query=("update destination set seats=? where d_id=?");
+				PreparedStatement p=con.prepareStatement(query);
+				p.setInt(1,cancelled);
+				p.setInt(2, id);
+				p.executeUpdate();
+				String str="delete from passenger_details where u_id=?";
+				PreparedStatement prep=con.prepareStatement(str);
+				prep.setInt(1,unique);
+				prep.executeUpdate();
+				System.out.println("Update done successfully...");
+		}
+	
+	//show booking
+	
+		public void showBooking(int unique1) throws ClassNotFoundException, SQLException
+		{
+			toConnect();
+			   PreparedStatement p=null;
+				ResultSet res=null;
+				String query="Select d_id,name,phn_no,no_of_seats,amount_paid from passenger_Details where u_id = ?";
+				p=con.prepareStatement(query);
+				p.setInt(1,unique1);
+				res=p.executeQuery();
+			   System.out.println("D_id\t\tName\t\tPhn_no\t\tSeats_booked\t\tAmount_paid");
+			   while(res.next())
+			   {
+				   System.out.println(res.getInt(1)+"\t\t"+res.getString(2)+"\t\t"+res.getString(3)+"\t\t"+res.getInt(4)+"\t\t"+res.getInt(5));
+			   }
+			   System.out.println("");
+		}
+	
+	//to exit
+	
+		public void exit()
+		{
+			System.out.println("Thank you..");
+		}
+
+	// to execute
+		
+	    public void execute() throws ClassNotFoundException, SQLException
+	    {
+	    	int option,select,opt,dest_id,u_id=1;
+	    	int id=0,seat=0,amount=0;
+	    	String choice="", c_name="",phone="";
+	    	String user="",pass="";
+	    	Scanner sc=new Scanner(System.in);
+	    		login();
+	    		System.out.println("Enter your choice : ");
+	    		option=sc.nextInt();
+	    		switch(option)
+	    		{
+	    		case 1:
+		    			System.out.println("Enter Username : ");
+		    			user=sc.next();
+		    			System.out.println("Enter Password : ");
+		    			pass=sc.next();
+		    			if(user.equalsIgnoreCase("admin") && pass.equalsIgnoreCase("password"))
+		    			{
+		    				do
+		    				{
+	    					mainMenuAdmin();
+	    					System.out.println("Enter your choice : ");
+	    					select=sc.nextInt();
+	    					switch(select)
+	    					{
+	    					case 1:
+	    						System.out.println("place details");
+	    						toShowDest();
+	    						System.out.println("");
+	    						break;
+	    					case 2:
+	    						System.out.println("update place");
+	    						do
+	    						{
+	    							toUpdate();
+	    							System.out.println("Enter your choice : ");
+	    							opt=sc.nextInt();
+	    							switch(opt)
+	    							{
+	    							case 1:
+	    								System.out.println("To insert into table : ");
+	    								toInsertDest();
+	    								System.out.println("");
+	    	    						break;
+	    							case 2:
+	    								System.out.println("To delete from table : ");
+	    								System.out.println("Enter destination id : ");
+	    								dest_id=sc.nextInt();
+	    								toDeleteDest(dest_id);
+	    								System.out.println("");
+	    	    						break;
+	    							}
+	    						}while(opt==1&& opt==2);
+	    						break;
+	    					case 3:
+	    						System.out.println("driver details");
+	    						toDisplayDriver();
+	    						System.out.println("");
+	    						break;
+	    					case 4:
+	    						System.out.println("update driver");
+	    						do
+	    						{
+	    							toUpdate();
+	    							System.out.println("Enter your choice : ");
+	    							opt=sc.nextInt();
+	    							switch(opt)
+	    							{
+	    							case 1:
+	    								System.out.println("To insert into table : ");
+	    								toInsertDriver();
+	    								System.out.println("");
+	    	    						break;
+	    							case 2:
+	    								System.out.println("To delete from table : ");
+	    								System.out.println("Enter destination id : ");
+	    								dest_id=sc.nextInt();
+	    								toDeleteDriver(dest_id);
+	    								System.out.println("");
+	    	    						break;
+	    							}
+	    						}while(opt==1&&opt==2);
+	    						break;
+	    					case 5:
+	    						passengerDetail();
+	    						break;
+	    					case 0:
+	    						System.out.println("Thank you .. ");
+	    					}
+	    				}while(select!=0);
+	    			}
+		    			else
+		    			{
+		    				System.out.println("Username and Password incorrect");
+		    			}
+	    			break;
+	    		case 2:
+	    			do
+	    			{
+	    				mainMenuUser();
+						System.out.println("Enter your choice : ");
+						select=sc.nextInt();
+	    				switch(select)
+	    				{
+	    				case 1:
+	    					System.out.println("place details");
+							toShowDest();
+							System.out.println("");
+							break;
+	    				case 2:
+	    					System.out.println("driver details");
+							toDisplayDriver();
+							System.out.println("");
+							break;
+	    				case 3:
+	    					System.out.println("Book tickets");
+	    					toShowDest();
+	    					System.out.println("Enter the destination id : ");
+	    					id=sc.nextInt();
+	    					System.out.println("Enter your name : ");
+	    					c_name=sc.next();
+	    					System.out.println("Enter your Phone Number : ");
+	    					phone=sc.next();
+	    					System.out.println("Enter no.of seats : ");
+	    					seat=sc.nextInt();
+	    					System.out.println("Fare to be Paid : ");
+	    					toPay(id,seat);
+	    					System.out.println("Do you want to continue with payment : [y/n]");
+	    					choice=sc.next().toLowerCase();
+							if(choice.equals("y")) 
+							{
+								System.out.println("Enter an Amount to pay : ");
+								amount=sc.nextInt();
+								fare(id,seat,amount);
+							}
+							if(count>0)
+							{
+							passengerDetails(c_name,phone,seat,amount,id);
+							updateSeat(seat,id,phone);
+							}
+							break;
+	    				case 4:
+	    					System.out.println("Cancel seats..");
+	    					System.out.println("Enter your Unique id to cancel tickets : ");
+	    					int unique=sc.nextInt();
+	    					 updateCancelledSeat(unique,seat,id);
+	    					break;
+	    				case 5:
+	    					System.out.println("Show bill");
+	    					System.out.println("Enter your Unique id to show your bill : ");
+	    					int unique1=sc.nextInt();
+	    					showBooking(unique1);
+	    					break;
+	    				case 0:
+	    					System.out.println("Thank you...");
+	    				}
+	    			}while(select!=0);
+	    			break;
+	    		case 0:
+	    			System.out.println("Thank you...");
+	    		}
+	    }
+}
+
